@@ -1,5 +1,5 @@
 services:
-  # PostgreSQL Database
+  # PostgreSQL Database (Managed by Render)
   - type: pserv
     name: schema-sync-postgres
     plan: free
@@ -7,26 +7,35 @@ services:
     databaseName: metadata_store
     databaseUser: postgres
 
-  # FastAPI Web Service
+  # Milvus Lite Service (Simplified Milvus without etcd/MinIO)
+  - type: web
+    name: milvus-service
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./Dockerfile.milvus
+    healthCheckPath: /healthz
+    envVars:
+      - key: ETCD_USE_EMBED
+        value: "true"
+      - key: COMMON_STORAGETYPE
+        value: "local"
+
+  # FastAPI Application
   - type: web
     name: schema-sync-api
     runtime: python
     plan: free
     region: oregon
-    branch: main
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn api:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.0"
     
     envVars:
-      # PostgreSQL - Auto-populated from database
-      - key: DATABASE_URL
-        fromDatabase:
-          name: schema-sync-postgres
-          property: connectionString
-      
-      # Parse DATABASE_URL for individual components
-      # Render will auto-populate these from DATABASE_URL
+      # PostgreSQL configuration - Auto-populated from database
       - key: METADATA_DB_HOST
         fromDatabase:
           name: schema-sync-postgres
@@ -52,15 +61,26 @@ services:
           name: schema-sync-postgres
           property: password
       
-      # Zilliz Cloud (Managed Milvus) - SET THESE IN RENDER DASHBOARD
-      # After creating the service, go to Environment and set:
+      # Milvus configuration - Connect to Milvus service
       - key: MILVUS_HOST
-        sync: false  # You must set this in Render dashboard
-        # Example: in03-xxx.aws-us-west-2.vectordb.zillizcloud.com
+        fromService:
+          type: web
+          name: milvus-service
+          property: host
       
       - key: MILVUS_PORT
         value: "19530"
-      
-      - key: MILVUS_API_KEY
-        sync: false  # You must set this in Render dashboard (keep it secret!)
-        # Get this from your Zilliz Cloud cluster dashboard
+
+
+  - type: web
+    name: attu-gui
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./Dockerfile.attu
+    envVars:
+      - key: MILVUS_URL
+        fromService:
+          type: web
+          name: milvus-service
+          property: hostport
