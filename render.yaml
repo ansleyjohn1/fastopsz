@@ -4,8 +4,6 @@ services:
     name: schema-sync-postgres
     plan: free
     region: oregon
-    databaseName: metadata_store
-    databaseUser: postgres
 
   # Milvus Lite Service (Simplified Milvus without etcd/MinIO)
   - type: web
@@ -31,10 +29,10 @@ services:
     startCommand: uvicorn api:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
     envVars:
+      # Python version
       - key: PYTHON_VERSION
         value: "3.12.0"
-    
-    envVars:
+      
       # PostgreSQL configuration - Auto-populated from database
       - key: METADATA_DB_HOST
         fromDatabase:
@@ -61,7 +59,7 @@ services:
           name: schema-sync-postgres
           property: password
       
-      # Milvus configuration - Connect to Milvus service
+      # Milvus configuration - Connect to Milvus service on Render
       - key: MILVUS_HOST
         fromService:
           type: web
@@ -71,7 +69,7 @@ services:
       - key: MILVUS_PORT
         value: "19530"
 
-
+  # Attu GUI for Milvus (Optional)
   - type: web
     name: attu-gui
     runtime: docker
