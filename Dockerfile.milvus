@@ -1,0 +1,16 @@
+FROM milvusdb/milvus:v2.3.4
+
+# Use embedded etcd (no external etcd needed)
+ENV ETCD_USE_EMBED=true
+
+# Use local storage (no MinIO needed)
+ENV COMMON_STORAGETYPE=local
+
+# Expose Milvus gRPC port
+EXPOSE 19530
+
+# Expose Milvus metrics port (optional)
+EXPOSE 9091
+
+# Start Milvus in standalone mode with embedded dependencies
+CMD ["milvus", "run", "standalone"]
