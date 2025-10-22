@@ -1,0 +1,66 @@
+services:
+  # PostgreSQL Database
+  - type: pserv
+    name: schema-sync-postgres
+    plan: free
+    region: oregon
+    databaseName: metadata_store
+    databaseUser: postgres
+
+  # FastAPI Web Service
+  - type: web
+    name: schema-sync-api
+    runtime: python
+    plan: free
+    region: oregon
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn api:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    
+    envVars:
+      # PostgreSQL - Auto-populated from database
+      - key: DATABASE_URL
+        fromDatabase:
+          name: schema-sync-postgres
+          property: connectionString
+      
+      # Parse DATABASE_URL for individual components
+      # Render will auto-populate these from DATABASE_URL
+      - key: METADATA_DB_HOST
+        fromDatabase:
+          name: schema-sync-postgres
+          property: host
+      
+      - key: METADATA_DB_PORT
+        fromDatabase:
+          name: schema-sync-postgres
+          property: port
+      
+      - key: METADATA_DB_NAME
+        fromDatabase:
+          name: schema-sync-postgres
+          property: database
+      
+      - key: METADATA_DB_USER
+        fromDatabase:
+          name: schema-sync-postgres
+          property: user
+      
+      - key: METADATA_DB_PASSWORD
+        fromDatabase:
+          name: schema-sync-postgres
+          property: password
+      
+      # Zilliz Cloud (Managed Milvus) - SET THESE IN RENDER DASHBOARD
+      # After creating the service, go to Environment and set:
+      - key: MILVUS_HOST
+        sync: false  # You must set this in Render dashboard
+        # Example: in03-xxx.aws-us-west-2.vectordb.zillizcloud.com
+      
+      - key: MILVUS_PORT
+        value: "19530"
+      
+      - key: MILVUS_API_KEY
+        sync: false  # You must set this in Render dashboard (keep it secret!)
+        # Get this from your Zilliz Cloud cluster dashboard
