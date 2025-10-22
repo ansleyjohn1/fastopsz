@@ -10,7 +10,17 @@ class EmbeddingManager:
     """
 
     def __init__(self, milvus_config):
-        connections.connect(**milvus_config)
+        if 'uri' in milvus_config:
+            # Milvus Lite mode (embedded, file-based)
+            print(f"Connecting to Milvus Lite: {milvus_config['uri']}")
+            connections.connect(
+                alias=milvus_config.get('alias', 'default'),
+                uri=milvus_config['uri']
+            )
+        else:
+            # Standalone Milvus mode (separate service)
+            print(f"Connecting to Milvus: {milvus_config['host']}:{milvus_config['port']}")
+            connections.connect(**milvus_config)
         self.collection_name = "table_embeddings"
         self._ensure_collection_exists()
         self.collection = Collection(self.collection_name)
@@ -134,4 +144,5 @@ class EmbeddingManager:
         }]
 
         self.collection.insert(data)
+
         self.collection.flush()
