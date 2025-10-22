@@ -15,11 +15,25 @@ METADATA_DB_CONFIG = {
 
 # Milvus configuration
 # Supports both self-hosted and Zilliz Cloud
-MILVUS_CONFIG = {
-    "host": os.getenv("MILVUS_HOST", "localhost"),
-    "port": os.getenv("MILVUS_PORT", "19530"),
-    "alias": "default"
-}
+if os.getenv("MILVUS_URI"):
+    # Milvus Lite mode (embedded, file-based)
+    MILVUS_CONFIG = {
+        "uri": os.getenv("MILVUS_URI", "./milvus_data.db"),
+        "alias": "default"
+    }
+elif os.getenv("MILVUS_HOST"):
+    # Standalone Milvus mode (separate service)
+    MILVUS_CONFIG = {
+        "host": os.getenv("MILVUS_HOST", "localhost"),
+        "port": int(os.getenv("MILVUS_PORT", "19530")),
+        "alias": "default"
+    }
+else:
+    # Default to Milvus Lite for development
+    MILVUS_CONFIG = {
+        "uri": "./milvus_data.db",
+        "alias": "default"
+    }
 
 # Add Zilliz Cloud authentication if API key is provided
 if os.getenv("MILVUS_API_KEY"):
@@ -38,3 +52,4 @@ MYSQL_CONNECTION = {
     "username": os.getenv("MYSQL_USER", "root"),
     "password": os.getenv("MYSQL_PASSWORD", "password")
 }
+
