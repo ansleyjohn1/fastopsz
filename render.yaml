@@ -5,10 +5,10 @@ services:
     plan: free
     region: oregon
 
-  # Milvus Lite Service (Simplified Milvus without etcd/MinIO)
+  # Milvus Lite Service (Docker)
   - type: web
     name: milvus-service
-    runtime: docker
+    env: docker
     plan: free
     region: oregon
     dockerfilePath: ./Dockerfile.milvus
@@ -22,7 +22,7 @@ services:
   # FastAPI Application
   - type: web
     name: schema-sync-api
-    runtime: python
+    env: python
     plan: free
     region: oregon
     buildCommand: pip install -r requirements.txt
@@ -72,7 +72,7 @@ services:
   # Attu GUI for Milvus (Optional)
   - type: web
     name: attu-gui
-    runtime: docker
+    env: docker
     plan: free
     region: oregon
     dockerfilePath: ./Dockerfile.attu
