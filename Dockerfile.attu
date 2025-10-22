@@ -1,0 +1,10 @@
+FROM zilliz/attu:v2.3.4
+
+# Expose Attu web interface port
+EXPOSE 3000
+
+# Attu will read MILVUS_URL from environment
+# Set by Render in render.yaml
+
+# Start Attu server
+CMD ["node", "server/index.js"]
