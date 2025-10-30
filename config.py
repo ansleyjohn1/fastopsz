@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+from datetime import datetime
 
 # Load environment variables
 load_dotenv()
@@ -17,8 +18,9 @@ METADATA_DB_CONFIG = {
 # Supports both self-hosted and Zilliz Cloud
 if os.getenv("MILVUS_URI"):
     # Milvus Lite mode (embedded, file-based)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     MILVUS_CONFIG = {
-        "uri": os.getenv("MILVUS_URI", "./milvus_data.db"),
+        "uri": os.getenv("MILVUS_URI", f"./milvus_data_{timestamp}.db"),
         "alias": "default"
     }
 elif os.getenv("MILVUS_HOST"):
@@ -30,8 +32,9 @@ elif os.getenv("MILVUS_HOST"):
     }
 else:
     # Default to Milvus Lite for development
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     MILVUS_CONFIG = {
-        "uri": "./milvus_data.db",
+        "uri": os.getenv("MILVUS_URI", f"./milvus_data_{timestamp}.db"),
         "alias": "default"
     }
 
@@ -52,4 +55,5 @@ MYSQL_CONNECTION = {
     "username": os.getenv("MYSQL_USER", "root"),
     "password": os.getenv("MYSQL_PASSWORD", "password")
 }
+
 
