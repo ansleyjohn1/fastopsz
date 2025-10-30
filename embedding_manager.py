@@ -134,15 +134,25 @@ class EmbeddingManager:
             self.collection.delete(f"id in {ids}")
 
         # Insert new embedding with 3 main data points: schema_text, embedding (vectors), metadata
-        data = [{
-            "connection_id": connection_id,
-            "table_name": table_name,
-            "schema_hash": schema_hash,
-            "schema_text": schema_text,  # Text (schema info)
-            "embedding": embedding,  # Vectors
-            "metadata": json.dumps(metadata)  # Metadata (JSON string)
-        }]
+        # data = [{
+        #     "connection_id": connection_id,
+        #     "table_name": table_name,
+        #     "schema_hash": schema_hash,
+        #     "schema_text": schema_text,  # Text (schema info)
+        #     "embedding": embedding,  # Vectors
+        #     "metadata": json.dumps(metadata)  # Metadata (JSON string)
+        # }]
 
+        # self.collection.insert(data)
+        data = [
+            [connection_id],
+            [table_name],
+            [schema_hash],
+            [schema_text],
+            [embedding],
+            [json.dumps(metadata)]
+        ]
         self.collection.insert(data)
 
         self.collection.flush()
+
