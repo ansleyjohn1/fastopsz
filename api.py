@@ -20,6 +20,20 @@ async def lifespan(app: FastAPI):
     global metadata_store, embedding_manager, orchestrator
     
     print("Initializing components...")
+    from pymilvus import utility, connections
+    try:
+        connections.connect(
+            alias=MILVUS_CONFIG.get('alias', 'default'),
+            uri=MILVUS_CONFIG.get('uri', './milvus_data.db')
+        )
+        
+        collection_name = "table_embeddings"
+        if utility.has_collection(collection_name):
+            print(f"Dropping potentially corrupted collection: {collection_name}")
+            utility.drop_collection(collection_name)
+            print("Collection dropped successfully")
+    except Exception as e:
+        print(f"Warning: Could not drop collection: {e}")
     metadata_store = MetadataStore(METADATA_DB_CONFIG)
     embedding_manager = EmbeddingManager(MILVUS_CONFIG)
     orchestrator = SchemaSyncOrchestrator(metadata_store, embedding_manager)
