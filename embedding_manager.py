@@ -61,11 +61,14 @@ class EmbeddingManager:
         """
         # Query Milvus
         expr = f'connection_id == "{connection_id}" and table_name == "{table_name}"'
+        print('e1')
         self.collection.flush()
+        print('e2')
         results = self.collection.query(
             expr=expr,
             output_fields=["schema_hash", "embedding"]
         )
+        print('e3')
 
         if not results:
             return False, None
@@ -154,6 +157,7 @@ class EmbeddingManager:
         self.collection.insert(data)
 
         self.collection.flush()
+
 
 
 
