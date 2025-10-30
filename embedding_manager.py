@@ -147,6 +147,7 @@ class EmbeddingManager:
 
         # self.collection.insert(data)
         data = [
+            [],
             [connection_id],
             [table_name],
             [schema_hash],
@@ -161,6 +162,7 @@ class EmbeddingManager:
         self.collection.insert(data)
 
         self.collection.flush()
+
 
 
 
