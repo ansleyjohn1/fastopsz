@@ -43,7 +43,7 @@ class EmbeddingManager:
             FieldSchema(name="metadata", dtype=DataType.VARCHAR, max_length=65535)  # Metadata (JSON)
         ]
 
-        schema = CollectionSchema(fields, description="Table schema embeddings")
+        schema = CollectionSchema(fields, description="Table schema embeddings", enable_dynamic_field=True)
         collection = Collection(self.collection_name, schema)
 
         # Create index for vector search
@@ -60,6 +60,7 @@ class EmbeddingManager:
         """
         # Query Milvus
         expr = f'connection_id == "{connection_id}" and table_name == "{table_name}"'
+        self.collection.flush()
         results = self.collection.query(
             expr=expr,
             output_fields=["schema_hash", "embedding"]
@@ -126,6 +127,7 @@ class EmbeddingManager:
         """
         # Check if exists
         expr = f'connection_id == "{connection_id}" and table_name == "{table_name}"'
+        self.collection.flush()
         existing = self.collection.query(expr=expr, output_fields=["id"])
 
         if existing:
@@ -159,5 +161,6 @@ class EmbeddingManager:
         self.collection.insert(data)
 
         self.collection.flush()
+
 
 
