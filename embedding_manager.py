@@ -30,6 +30,7 @@ class EmbeddingManager:
     def _ensure_collection_exists(self):
         """Create collection if it doesn't exist."""
         if utility.has_collection(self.collection_name):
+            print('table exists')
             return
 
         # Define schema with 3 columns: text (schema info), vectors, metadata
@@ -42,7 +43,7 @@ class EmbeddingManager:
             FieldSchema(name="embedding", dtype=DataType.FLOAT_VECTOR, dim=384),  # Vectors
             FieldSchema(name="metadata", dtype=DataType.VARCHAR, max_length=65535)  # Metadata (JSON)
         ]
-
+        print('table not exist')
         schema = CollectionSchema(fields, description="Table schema embeddings", enable_dynamic_field=True)
         collection = Collection(self.collection_name, schema)
 
