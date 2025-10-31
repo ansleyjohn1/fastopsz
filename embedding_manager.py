@@ -155,11 +155,11 @@ class EmbeddingManager:
        
         print("Schema fields:", [f.name for f in self.collection.schema.fields])
         print("Data structure lens:", [len(col) for col in data])
-        print("Embedding sample type:", type(data[4][0]), "len:", len(data[4][0]))
 
         self.collection.insert(data)
 
         self.collection.flush()
+
 
 
 
