@@ -148,7 +148,7 @@ class EmbeddingManager:
             "schema_hash": schema_hash,
             "schema_text": schema_text,  # Text (schema info)
             "embedding": embedding,  # Vectors
-            "embedding_json": json.dumps(embedding)
+            "embedding_json": json.dumps(embedding),
             "metadata": json.dumps(metadata)  # Metadata (JSON string)
         }]
 
@@ -160,6 +160,7 @@ class EmbeddingManager:
         self.collection.insert(data)
 
         self.collection.flush()
+
 
 
 
