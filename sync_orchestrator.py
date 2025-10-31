@@ -78,7 +78,6 @@ class SchemaSyncOrchestrator:
                         schema["table_name"],
                         schema["schema_hash"],
                         embedding,
-                        json.dumps(existing_embedding),
                         schema_text,
                         metadata
                     )
@@ -95,3 +94,4 @@ class SchemaSyncOrchestrator:
 
 
         return {"synced": synced_count, "skipped": skipped_count}
+
