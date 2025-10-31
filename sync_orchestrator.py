@@ -78,6 +78,7 @@ class SchemaSyncOrchestrator:
                         schema["table_name"],
                         schema["schema_hash"],
                         embedding,
+                        json.dumps(existing_embedding),
                         schema_text,
                         metadata
                     )
@@ -91,5 +92,6 @@ class SchemaSyncOrchestrator:
         self.metadata_store.update_connection_sync_time(connection_info["connection_id"])
 
         print(f"Synced: {synced_count}, Skipped: {skipped_count}")
+
 
         return {"synced": synced_count, "skipped": skipped_count}
