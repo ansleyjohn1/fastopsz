@@ -41,6 +41,7 @@ class EmbeddingManager:
             FieldSchema(name="schema_hash", dtype=DataType.VARCHAR, max_length=32),
             FieldSchema(name="schema_text", dtype=DataType.VARCHAR, max_length=65535),  # Text (schema info)
             FieldSchema(name="embedding", dtype=DataType.FLOAT_VECTOR, dim=384),  # Vectors
+            FieldSchema(name="embedding_json", dtype=DataType.VARCHAR, max_length=65535),  # For retrieval
             FieldSchema(name="metadata", dtype=DataType.VARCHAR, max_length=65535)  # Metadata (JSON)
         ]
         print('table not exist')
@@ -66,7 +67,7 @@ class EmbeddingManager:
         print('e2')
         results = self.collection.query(
             expr=expr,
-            output_fields=["schema_hash", "embedding"]
+            output_fields=["schema_hash", "embedding_json"]
         )
         print('e3')
 
@@ -76,7 +77,8 @@ class EmbeddingManager:
         # Check if schema hash matches (schema unchanged)
         existing_hash = results[0]["schema_hash"]
         if existing_hash == schema_hash:
-            return True, results[0]["embedding"]
+            embedding = json.loads(results[0]["embedding_json"])
+            return True, embedding
         else:
             # Schema changed, need to regenerate
             return False, None
@@ -146,6 +148,7 @@ class EmbeddingManager:
             "schema_hash": schema_hash,
             "schema_text": schema_text,  # Text (schema info)
             "embedding": embedding,  # Vectors
+            "embedding_json": json.dumps(embedding)
             "metadata": json.dumps(metadata)  # Metadata (JSON string)
         }]
 
@@ -157,6 +160,7 @@ class EmbeddingManager:
         self.collection.insert(data)
 
         self.collection.flush()
+
 
 
 
